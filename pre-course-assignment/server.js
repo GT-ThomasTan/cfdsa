@@ -30,6 +30,7 @@ app.get("/healthecheck", (req, res) => {
   res.status(200).json(response);
 });
 
-app.listen(3000, () => {
-  console.log("express-handlebars example server listening on: 3000");
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`express-handlebars example server listening on: ${PORT}`);
 });

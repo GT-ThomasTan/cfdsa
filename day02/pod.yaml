@@ -8,7 +8,7 @@ metadata:
     app: dov
 spec:
   containers:
-    - name: dov-container
+    - name: dov-containers
       image: chukmunnlee/dov-bear:v5
       imagePullPolicy: IfNotPresent
       env:

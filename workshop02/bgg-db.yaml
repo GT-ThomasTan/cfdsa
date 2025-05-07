@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1 
+kind: Deployment 
+metadata: 
+  name: bgg-db-deploy 
+  namespace: bggns 
+  labels: 
+    app: bgg 
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bgg
+      env: prod
+  template: 
+    metadata:
+      name: bgg-po 
+      labels:
+        app: bgg
+        env: prod
+    spec:
+      containers:
+      - name: bgg-containers 
+        image: stackupiss/bgg-database:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: bgg-db-port 
+          containerPort: 3306
+        resources: {}
+
+--- 
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: bggdb-svc 
+  namespace: bggns 
+  labels:
+    app: bgg 
+spec: 
+  # clusterip - svc is available inside the cluster only
+  type: ClusterIP
+  selector: 
+    app: bgg 
+    env: prod
+  ports:
+  - name: bgg-db-port 
+    port: 3306
+    targetPort: bgg-db-port

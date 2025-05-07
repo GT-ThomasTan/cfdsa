@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1 
+kind: Deployment 
+metadata: 
+  name: bgg-app-deploy 
+  namespace: bggns 
+  labels: 
+    app: bgg 
+spec: 
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bgg
+      env: prod
+  template: 
+    metadata:
+      name: bgg-po 
+      labels:
+        app: bgg
+        env: prod
+    spec:
+      containers:
+      - name: bgg-containers 
+        image: stackupiss/bgg-backend:v1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: BGG_DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: bgg-cm
+              key: BGG_DB_USER
+        - name: BGG_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: bgg-cm
+              key: BGG_DB_HOST
+        - name: BGG_DB_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: bgg-cm
+              key: BGG_DB_PASSWORD
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+          timeoutSeconds: 2
+        ports:
+        - name: bgg-app-port 
+          containerPort: 3000
+        resources: {}
+
+--- 
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: bggapp-svc 
+  namespace: bggns 
+  labels:
+    app: bgg 
+spec: 
+  type: LoadBalancer
+  selector: 
+    app: bgg 
+    env: prod
+  ports:
+  - name: bgg-app-port 
+    port: 8080
+    targetPort: bgg-app-port

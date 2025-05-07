@@ -5,7 +5,7 @@ metadata:
   name: dov-cm
   namespace: myns
 data:
-  instance_name: name from cm
+  instance_name: this is now a new instance_name
 
 ---
 apiVersion: v1

@@ -12,12 +12,14 @@ spec:
     matchLabels:
       app: bgg
       env: prod
+      name: bgg-app-po
   template: 
     metadata:
-      name: bgg-po 
+      name: bgg-app-po 
       labels:
         app: bgg
         env: prod
+        name: bgg-app-po
     spec:
       containers:
       - name: bgg-containers 
@@ -42,7 +44,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /healthz
-            port: 3000
+            port: bgg-app-port
           initialDelaySeconds: 10
           periodSeconds: 5
           failureThreshold: 3
@@ -66,6 +68,7 @@ spec:
   selector: 
     app: bgg 
     env: prod
+    name: bgg-app-po
   ports:
   - name: bgg-app-port 
     port: 8080

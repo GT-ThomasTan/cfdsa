@@ -12,12 +12,14 @@ spec:
     matchLabels:
       app: bgg
       env: prod
+      name: bgg-db-po
   template: 
     metadata:
-      name: bgg-po 
+      name: bgg-db-po 
       labels:
         app: bgg
         env: prod
+        name: bgg-db-po
     spec:
       containers:
       - name: bgg-containers 
@@ -42,6 +44,7 @@ spec:
   selector: 
     app: bgg 
     env: prod
+    name: bgg-db-po
   ports:
   - name: bgg-db-port 
     port: 3306

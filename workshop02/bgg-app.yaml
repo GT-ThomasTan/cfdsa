@@ -13,6 +13,11 @@ spec:
       app: bgg
       env: prod
       name: bgg-app-po
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
   template: 
     metadata:
       name: bgg-app-po 
@@ -23,7 +28,7 @@ spec:
     spec:
       containers:
       - name: bgg-containers 
-        image: stackupiss/bgg-backend:v1
+        image: stackupiss/bgg-backend:v2
         imagePullPolicy: IfNotPresent
         env:
         - name: BGG_DB_USER
@@ -64,7 +69,8 @@ metadata:
   labels:
     app: bgg 
 spec: 
-  type: LoadBalancer
+  # type: LoadBalancer
+  type: ClusterIP
   selector: 
     app: bgg 
     env: prod

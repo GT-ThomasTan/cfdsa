@@ -1,0 +1,51 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bgg-secret
+  labels:
+    app: bgg
+data:
+  BGG_DB_PASSWORD: Y2hhbmdlaXQ=
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bgg-cm
+  labels:
+    app: bgg
+data:
+  BGG_DB_USER: root
+  BGG_DB_HOST: bggdb-svc.bggns.svc.cluster.local
+
+--- 
+apiVersion: v1 
+kind: Pod 
+metadata:
+  name: fakeapi-po 
+  namespace: myns
+  labels:
+    app: fakeapi 
+spec:
+  volumes:
+  - name: secret-vol
+    secret:
+      secretName: bgg-secret
+  - name: config-vol
+    ConfigMap:
+      name: bgg-cm
+  containers:
+  - name: fakeapi-containers 
+    image: chukmunnlee/fake-api:v1
+    imagePullPolicy: IfNotPresent
+    volumeMount:
+    - name: secret-vol
+      mountPath: /opt/secrets
+      readOnly: true
+    - name: config-vol
+      mountPath: /opt/config
+    ports:
+    - name: fakeapi-port 
+      containerPort: 3000
+    resources: {}

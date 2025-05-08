@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codeserver-deploy
+  namespace: csns
+  labels:
+    app: codeserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codeserver
+      name: codeserver-po
+  template:
+    metadata:
+      name: codeserver-po
+      labels:
+        app: codeserver
+        name: codeserver-po
+    spec:
+      volumes:
+        - name: workspace-vol
+          persistentVolumeClaim:
+            claimName: codeserver-pvc
+      containers:
+        - name: codeserver-container
+          image: linuxserver/code-server:4.99.4
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: codeserver-cm
+            - secretRef:
+                name: codeserver-secret
+          volumeMounts:
+            - name: workspace-vol
+              mountPath: /config/workspace
+          ports:
+            - name: codeserver-port
+              containerPort: 8443
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "200m"
+              memory: "512Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codeserver-svc
+  namespace: csns
+  labels:
+    app: codeserver
+spec:
+  type: ClusterIP
+  selector:
+    app: codeserver
+    name: codeserver-po
+  ports:
+    - name: codeserver-port
+      port: 8443
+      targetPort: codeserver-port

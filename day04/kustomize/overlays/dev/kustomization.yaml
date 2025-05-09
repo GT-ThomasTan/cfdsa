@@ -1,0 +1,54 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+  - dov-hpa.yaml
+
+namespace: dev-ns
+
+namePrefix: dev-
+nameSuffix: -dev
+
+labels:
+  - pairs:
+      env: dev
+
+replicas:
+  - name: dov-deploy
+    count: 1
+
+images:
+  - name: chukmunnlee/dov-bear
+    newTag: v1-medium
+
+configMapGenerator:
+  - name: dov-cm
+    namespace: dov
+    behavior: create
+    literals:
+      - INSTANCE_NAME="dev env"
+
+patches:
+  - path: remove-ingress.yaml
+  - path: add-resources.yaml
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: dov-deploy
+      namespace: dov
+
+replacements:
+  - source:
+      kind: Service
+      name: dov-svc
+      namespace: dov
+      fieldPath: metadata.name
+    targets:
+      - select:
+        kind: Deployment
+        name: dov-deploy
+       fieldPaths:
+          - spec.template.spec.containers.[name=dev-containers].env.[name=INSTANCE_HASH].value

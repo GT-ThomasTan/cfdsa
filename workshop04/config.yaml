@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: minio
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minio-cm
+  namespace: minio
+data:
+  MINIO_ROOT_USER: root
+  MINIO_DATA_DIR: /data
+  MINIO_DISTRIBUTED_MODE_ENABLED: 'yes'
+  MINIO_DISTRIBUTED_NODES: minio-sts-{0...2}.minio-hsvc.minio.svc.cluster.local/data
+  MINIO_API_PORT_NUMBER: "9000"
+  MINIO_CONSOLE_PORT_NUMBER: "9090"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: minio-secret
+  namespace: minio
+type: Opaque
+data:
+  # password123
+  MINIO_ROOT_PASSWORD: cGFzc3dvcmQxMjM=
